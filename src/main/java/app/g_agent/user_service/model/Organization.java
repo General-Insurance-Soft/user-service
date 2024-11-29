@@ -1,4 +1,4 @@
-package app.g_agent.auth_service.model;
+package app.g_agent.user_service.model;
 
 import java.util.UUID;
 

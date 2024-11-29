@@ -1,4 +1,4 @@
-package app.g_agent.auth_service;
+package app.g_agent.user_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
