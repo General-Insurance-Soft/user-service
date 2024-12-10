@@ -2,8 +2,11 @@ package app.g_agent.user_service.model;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -30,6 +33,14 @@ public class User implements UserDetails {
 	private String password;
 	@Column(nullable = false)
 	private String role;
+
+	@CreationTimestamp
+	@Column(updatable = false, name = "created_at")
+	private Date createdAt;
+
+	@UpdateTimestamp
+	@Column(name = "updated_at")
+	private Date updatedAt;
 
 	public static class Builder {
 		private UUID id;
@@ -157,7 +168,6 @@ public class User implements UserDetails {
 		return this.email;
 	}
 
-	
 	public void setUserName(String userName) {
 		this.email = userName;
 	}
@@ -175,5 +185,20 @@ public class User implements UserDetails {
 		return Collections.emptyList();
 	}
 
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
+	}
 
 }

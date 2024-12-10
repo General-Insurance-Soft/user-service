@@ -5,10 +5,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
+import app.g_agent.user_service.model.User;
 import app.g_agent.user_service.repository.UserRepository;
 
-@Component
-public class UserService implements UserDetailsService {
+//@Component
+public class UserService {//implements UserDetailsService {
 
 	private final UserRepository userRepository;
 
@@ -16,10 +17,15 @@ public class UserService implements UserDetailsService {
 		this.userRepository = userRepository;
 	}
 
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		return userRepository.findByEmail(username)
-				.orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
-	}
+//	@Override
+//	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//		User user = userRepository.findByEmail(username)
+//				.orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+//
+//		return org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
+//				.password(user.getPassword()).roles(user.getRole())
+//				// .roles(user.getRoles().split(","))
+//				.build();
+//	}
 
 }
