@@ -1,5 +1,7 @@
 package app.g_agent.user_service.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +21,7 @@ import app.g_agent.user_service.service.JwtService;
 //http://localhost:9000/auth-service/api/v1/login
 public class AuthController {
 
-//private final JwtService jwtService;
+	private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
 	@Autowired
 	private AuthenticationService authenticationService;
@@ -28,9 +30,10 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-
+		
+		logger.info("Authenticating request =====>");
 		User user = authenticationService.authenticate(loginRequest);
-
+		logger.info("Attempting to generate JWT =====>");
 		String jwtToken = jwtService.generateToken(user);
 
 		LoginResponse loginResponse = new LoginResponse();

@@ -1,5 +1,9 @@
 package app.g_agent.user_service.system;
 
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,11 +14,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import app.g_agent.user_service.model.User;
 import app.g_agent.user_service.repository.UserRepository;
 
 @Configuration
 public class ApplicationConfiguration {
 
+	private static final Logger logger = LoggerFactory.getLogger(ApplicationConfiguration.class);
 	private final UserRepository userRepository;
 
 	public ApplicationConfiguration(UserRepository userRepository) {
@@ -23,8 +29,19 @@ public class ApplicationConfiguration {
 
 	@Bean
 	UserDetailsService userDetailsService() {
-		return username -> userRepository.findByEmail(username)
-				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+		return username -> {
+
+			logger.debug("will attempt to find user in DB?===> " + username);
+			Optional<User> user = userRepository.findByEmail(username);
+
+			logger.debug("is  user in DB?===> " + user.isPresent());
+
+			user.ifPresent(value -> logger.debug("user is===> " + value.getEmail()));
+
+			return userRepository.findByEmail(username)
+					.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+		};
 	}
 
 	@Bean
