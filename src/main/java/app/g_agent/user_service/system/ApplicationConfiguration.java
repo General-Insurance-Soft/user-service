@@ -14,13 +14,12 @@ import app.g_agent.user_service.repository.UserRepository;
 
 @Configuration
 public class ApplicationConfiguration {
-	
+
 	private final UserRepository userRepository;
 
-    public ApplicationConfiguration(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
+	public ApplicationConfiguration(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 
 	@Bean
 	UserDetailsService userDetailsService() {
