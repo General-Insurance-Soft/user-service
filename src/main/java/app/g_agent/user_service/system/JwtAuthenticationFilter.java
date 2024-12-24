@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	/**
 	 * Filter to validate JWT token
 	 */
-	
+
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
 			@NonNull FilterChain filterChain) throws ServletException, IOException {
@@ -63,13 +63,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 					authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 					SecurityContextHolder.getContext().setAuthentication(authToken);
+				} else {
+					throw new RuntimeException("Invalid JWT Token");
 				}
 			}
 
-			filterChain.doFilter(request, response);
-
 		} catch (Exception exception) {
-			handlerExceptionResolver.resolveException(request, response, null, exception);
+			// Handle invalid token and send error response
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.setContentType("application/json");
+			response.getWriter()
+					.write(String.format("{\"error\": \"Unauthorized\", \"message\": \"%s\"}", exception.getMessage()));
+			return; // Stop further processing
+
+			// handlerExceptionResolver.resolveException(request, response, null,
+			// exception);
 		}
+		filterChain.doFilter(request, response);
 	}
 }
