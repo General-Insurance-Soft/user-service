@@ -28,7 +28,7 @@ public class AuthController {
 	@Autowired
 	private JwtService jwtService;
 
-	@PostMapping("/login")
+	@PostMapping("/authenticate")
 	public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
 		
 		logger.info("Authenticating request =====>");
@@ -39,6 +39,7 @@ public class AuthController {
 		LoginResponse loginResponse = new LoginResponse();
 		loginResponse.setToken(jwtToken);
 		loginResponse.setExpiresIn(jwtService.getExpirationTime());
+		logger.info("Authenticate successful =====>");
 
 		return ResponseEntity.ok(loginResponse);
 
