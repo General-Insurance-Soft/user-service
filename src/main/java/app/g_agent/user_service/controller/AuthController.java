@@ -3,6 +3,7 @@ package app.g_agent.user_service.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.g_agent.user_service.dto.LoginRequest;
 import app.g_agent.user_service.dto.LoginResponse;
+import app.g_agent.user_service.dto.Token;
 import app.g_agent.user_service.model.User;
 import app.g_agent.user_service.service.AuthenticationService;
 import app.g_agent.user_service.service.JwtService;
@@ -32,8 +34,14 @@ public class AuthController {
 	@Autowired
 	Message message;
 
+	@Value("${security.jwt.expiration-time}")
+	private long jwtExpiration;
+
+	@Value("${security.jwt.refresh-expiration-time}")
+	private long jwtRefreshExpiration;
+
 	@PostMapping("/authenticate")
-	public ResponseEntity<Object> login(@RequestBody LoginRequest loginRequest) {
+	public ResponseEntity<Object> authenticate(@RequestBody LoginRequest loginRequest) {
 		User user = null;
 		logger.info("Authenticating request =====>");
 		try {
@@ -45,16 +53,24 @@ public class AuthController {
 		}
 
 		logger.info("Attempting to generate JWT =====>");
-		String jwtToken = jwtService.generateToken(user);
+		String jwtToken = jwtService.generateToken(user, jwtExpiration);
+		String jwtRefreshToken = jwtService.generateToken(user, jwtRefreshExpiration);
 
 		LoginResponse loginResponse = new LoginResponse();
-		loginResponse.setToken(jwtToken);
-		loginResponse.setExpiresIn(jwtService.getExpirationTime());
+
+		Token jwtTokenObj = new Token.Builder().token(jwtToken).expiresIn(jwtExpiration).build();
+
+		Token jwtRefreshTokenObj = new Token.Builder().token(jwtRefreshToken).expiresIn(jwtRefreshExpiration).build();
+
+		loginResponse.setJwtRefreshToken(jwtRefreshTokenObj);
+		loginResponse.setJwtToken(jwtTokenObj);
+
 		logger.info("Authenticate successful =====>");
 
 		return ResponseEntity.ok(loginResponse);
 
 	}
+
 
 	@GetMapping("/index")
 	public String index() {

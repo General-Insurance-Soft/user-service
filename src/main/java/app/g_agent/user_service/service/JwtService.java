@@ -28,6 +28,9 @@ public class JwtService {
 	@Value("${security.jwt.expiration-time}")
 	private long jwtExpiration;
 
+	@Value("${security.jwt.refresh-expiration-time}")
+	private long jwtRefreshExpiration;
+
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
 	}
@@ -37,16 +40,25 @@ public class JwtService {
 		return claimsResolver.apply(claims);
 	}
 
-	public String generateToken(UserDetails userDetails) {
-		return generateToken(new HashMap<>(), userDetails);
+	public String generateToken(UserDetails userDetails, Long expirationPeriod) {
+		return generateToken(new HashMap<>(), userDetails, expirationPeriod);
 	}
 
-	public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-		return buildToken(extraClaims, userDetails, jwtExpiration);
+	public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails,Long expirationPeriod) {
+		return buildToken(extraClaims, userDetails, expirationPeriod);
 	}
 
 	public long getExpirationTime() {
 		return jwtExpiration;
+	}
+	
+	public long getRefreshExpirationTime() {
+		return jwtRefreshExpiration;
+	}
+
+	public boolean isTokenValid(String token, UserDetails userDetails) {
+		final String username = extractUsername(token);
+		return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
 	}
 
 	private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
@@ -54,11 +66,6 @@ public class JwtService {
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + expiration))
 				.signWith(getSignInKey(), SignatureAlgorithm.HS256).compact();
-	}
-
-	public boolean isTokenValid(String token, UserDetails userDetails) {
-		final String username = extractUsername(token);
-		return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
 	}
 
 	private boolean isTokenExpired(String token) {
