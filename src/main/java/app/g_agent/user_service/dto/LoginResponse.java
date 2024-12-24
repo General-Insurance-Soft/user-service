@@ -1,25 +1,27 @@
 package app.g_agent.user_service.dto;
 
+import org.springframework.stereotype.Component;
+
+
 public class LoginResponse {
-    private String token;
 
-    private long expiresIn;
+	Token jwtToken;
+	Token jwtRefreshToken;
 
-    public String getToken() {
-        return token;
-    }
-
-	public long getExpiresIn() {
-		return expiresIn;
+	public Token getJwtToken() {
+		return jwtToken;
 	}
 
-	public void setExpiresIn(long expiresIn) {
-		this.expiresIn = expiresIn;
+	public void setJwtToken(Token jwtToken) {
+		this.jwtToken = jwtToken;
 	}
 
-	public void setToken(String token) {
-		this.token = token;
+	public Token getJwtRefreshToken() {
+		return jwtRefreshToken;
 	}
 
- 		
+	public void setJwtRefreshToken(Token jwtRefreshToken) {
+		this.jwtRefreshToken = jwtRefreshToken;
+	}
+
 }
