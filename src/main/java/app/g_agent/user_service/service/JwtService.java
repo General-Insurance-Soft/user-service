@@ -5,16 +5,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import javax.crypto.SecretKey;
 
 @Service
 public class JwtService {
@@ -66,13 +70,26 @@ public class JwtService {
 	}
 
 	private Claims extractAllClaims(String token) {
-		return Jwts.parserBuilder().setSigningKey(getSignInKey()) // Pass the SecretKey directly
-				.build().parseClaimsJws(token).getBody();
+		Claims claims = null;
+		try {
+			claims = Jwts.parserBuilder().setSigningKey(getSignInKey()) // Pass the SecretKey directly
+					.build().parseClaimsJws(token).getBody();
+			return claims;
+		} catch (ExpiredJwtException e) {
+			throw new RuntimeException("Token has expired");
+		} catch (MalformedJwtException e) {
+			throw new RuntimeException("Malformed token");
+		} catch (SignatureException e) {
+			throw new RuntimeException("Invalid token signature");
+		} catch (Exception e) {
+			throw new RuntimeException("Invalid token");
+		}
+
 	}
 
 	private SecretKey getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes); // This returns a SecretKey
-    }
-	
+		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+		return Keys.hmacShaKeyFor(keyBytes); // This returns a SecretKey
+	}
+
 }
