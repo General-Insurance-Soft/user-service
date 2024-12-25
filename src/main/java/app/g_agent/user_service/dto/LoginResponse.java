@@ -2,7 +2,6 @@ package app.g_agent.user_service.dto;
 
 import org.springframework.stereotype.Component;
 
-
 public class LoginResponse {
 
 	Token jwtToken;
