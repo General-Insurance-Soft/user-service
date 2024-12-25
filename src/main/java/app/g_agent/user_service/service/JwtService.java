@@ -7,10 +7,13 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import app.g_agent.user_service.controller.AuthController;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -22,6 +25,9 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
+
+	private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
+
 	@Value("${security.jwt.secret-key}")
 	private String secretKey;
 
@@ -40,25 +46,25 @@ public class JwtService {
 		return claimsResolver.apply(claims);
 	}
 
-	public String generateToken(UserDetails userDetails, Long expirationPeriod) {
-		return generateToken(new HashMap<>(), userDetails, expirationPeriod);
-	}
+//	public String generateToken(UserDetails userDetails, Long expirationPeriod) {
+//		return generateToken(new HashMap<>(), userDetails, expirationPeriod);
+//	}
 
-	public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails,Long expirationPeriod) {
+	public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, Long expirationPeriod) {
 		return buildToken(extraClaims, userDetails, expirationPeriod);
 	}
 
 	public long getExpirationTime() {
 		return jwtExpiration;
 	}
-	
+
 	public long getRefreshExpirationTime() {
 		return jwtRefreshExpiration;
 	}
 
-	public boolean isTokenValid(String token, UserDetails userDetails) {
+	public boolean isTokenValid(String token, UserDetails userDetails, String type) {
 		final String username = extractUsername(token);
-		return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+		return (username.equals(userDetails.getUsername())) && !isTokenExpired(token) && isCorrectType(token, type);
 	}
 
 	private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
@@ -74,6 +80,17 @@ public class JwtService {
 
 	private Date extractExpiration(String token) {
 		return extractClaim(token, Claims::getExpiration);
+	}
+
+	private boolean isCorrectType(String token, String type) {
+		Claims claims = extractAllClaims(token);
+		String tokenTypeString = (String) claims.get("type");
+		boolean bool = tokenTypeString.equals(type);
+		logger.info(
+				"Validate token of type===============> " + type + " against " + tokenTypeString + " value: " + bool);
+		if (tokenTypeString == null)
+			return false;
+		return tokenTypeString.equals(type);
 	}
 
 	private Claims extractAllClaims(String token) {
