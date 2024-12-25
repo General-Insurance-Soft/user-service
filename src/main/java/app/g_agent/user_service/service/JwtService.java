@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import app.g_agent.user_service.controller.AuthController;
+import app.g_agent.user_service.dto.UserTokenResponse;
+import app.g_agent.user_service.dto.Token;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -65,6 +67,26 @@ public class JwtService {
 	public boolean isTokenValid(String token, UserDetails userDetails, String type) {
 		final String username = extractUsername(token);
 		return (username.equals(userDetails.getUsername())) && !isTokenExpired(token) && isCorrectType(token, type);
+	}
+
+	public UserTokenResponse getTokenUserResponse(UserDetails user) {
+		logger.info("Attempting to generate JWT =====>");
+		Map<String, Object> extraClaims = new HashMap<String, Object>();
+		extraClaims.put("type", "access");
+		String jwtToken = this.generateToken(extraClaims, user, jwtExpiration);
+		extraClaims = new HashMap<String, Object>();
+		extraClaims.put("type", "refresh");
+		String jwtRefreshToken = this.generateToken(extraClaims, user, jwtRefreshExpiration);
+
+		UserTokenResponse userTokenResponse = new UserTokenResponse();
+
+		Token jwtTokenObj = new Token.Builder().token(jwtToken).expiresIn(jwtExpiration).build();
+
+		Token jwtRefreshTokenObj = new Token.Builder().token(jwtRefreshToken).expiresIn(jwtRefreshExpiration).build();
+
+		userTokenResponse.setJwtRefreshToken(jwtRefreshTokenObj);
+		userTokenResponse.setJwtToken(jwtTokenObj);
+		return userTokenResponse;
 	}
 
 	private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
