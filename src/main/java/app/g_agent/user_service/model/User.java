@@ -3,7 +3,6 @@ package app.g_agent.user_service.model;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -15,13 +14,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class User implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
+	private Long id;
 	@Column(name = "first_name")
 	private String firstName;
 	@Column(name = "second_name")
@@ -33,6 +34,11 @@ public class User implements UserDetails {
 	private String password;
 	@Column(nullable = false)
 	private String role;
+	@ManyToOne
+	@JoinColumn(name = "organization_id", nullable = false)
+	private Organization organization;
+	@Column(name = "updated_by")
+	private String updatedBy;
 
 	@CreationTimestamp
 	@Column(updatable = false, name = "created_at")
@@ -43,7 +49,7 @@ public class User implements UserDetails {
 	private Date updatedAt;
 
 	public static class Builder {
-		private UUID id;
+		private Long id;
 		private String firstName;
 		private String secondName;
 		private String thirdName;
@@ -52,7 +58,7 @@ public class User implements UserDetails {
 		private String password;
 		private String role;
 
-		public Builder setId(UUID id) {
+		public Builder setId(Long id) {
 			this.id = id;
 			return this;
 		}
@@ -107,11 +113,11 @@ public class User implements UserDetails {
 	}
 
 	// write getters and setters for all my variables
-	public UUID getId() {
+	public Long getId() {
 		return this.id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -199,6 +205,14 @@ public class User implements UserDetails {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public String getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
 	}
 
 }

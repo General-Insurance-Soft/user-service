@@ -13,4 +13,6 @@ import app.g_agent.user_service.model.User;
 public interface TokenRepository extends JpaRepository<TokenBlackList, UUID> {
 
 	Optional<TokenBlackList> findByToken(String token);
+	
+	
 }
