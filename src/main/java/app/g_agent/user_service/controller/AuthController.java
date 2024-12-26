@@ -67,6 +67,7 @@ public class AuthController {
 
 	@PostMapping("/refresh")
 	public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
+		logger.info("Refresh token request =====> " + request);
 		String refreshToken = request.get("refresh-token");
 		ResponseEntity<?> responseEntity = null;
 
@@ -78,6 +79,7 @@ public class AuthController {
 
 				if (jwtService.isTokenValid(refreshToken, user, "refresh")) {
 					UserTokenResponse userTokenResponse = jwtService.getTokenUserResponse(user);
+					jwtService.persistUsedToken(refreshToken);
 					return ResponseEntity.ok(userTokenResponse);
 				} else {
 					Message message = new Message();
@@ -91,7 +93,7 @@ public class AuthController {
 			Message message = new Message();
 			message.setNameString("Unauthorized");
 			message.setMessageString(e.getMessage());
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
+			return ResponseEntity.status(400).body(message);
 		}
 
 	}

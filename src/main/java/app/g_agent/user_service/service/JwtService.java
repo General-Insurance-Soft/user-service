@@ -3,19 +3,22 @@ package app.g_agent.user_service.service;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import app.g_agent.user_service.controller.AuthController;
-import app.g_agent.user_service.dto.UserTokenResponse;
 import app.g_agent.user_service.dto.Token;
+import app.g_agent.user_service.dto.UserTokenResponse;
+import app.g_agent.user_service.model.TokenBlackList;
+import app.g_agent.user_service.repository.TokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -29,6 +32,9 @@ import io.jsonwebtoken.security.Keys;
 public class JwtService {
 
 	private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
+
+	@Autowired
+	TokenRepository tokenRepository;
 
 	@Value("${security.jwt.secret-key}")
 	private String secretKey;
@@ -65,6 +71,9 @@ public class JwtService {
 	}
 
 	public boolean isTokenValid(String token, UserDetails userDetails, String type) {
+		tokenRepository.findByToken(token).ifPresent(value -> {
+			throw new RuntimeException("Invalid token");
+		});
 		final String username = extractUsername(token);
 		return (username.equals(userDetails.getUsername())) && !isTokenExpired(token) && isCorrectType(token, type);
 	}
@@ -87,6 +96,14 @@ public class JwtService {
 		userTokenResponse.setJwtRefreshToken(jwtRefreshTokenObj);
 		userTokenResponse.setJwtToken(jwtTokenObj);
 		return userTokenResponse;
+	}
+
+	public void persistUsedToken(String token) {
+		TokenBlackList tokenBlackList = new TokenBlackList();
+		tokenBlackList.setId(UUID.randomUUID());
+		tokenBlackList.setToken(token);
+		tokenBlackList.setExpriDate(this.extractExpiration(token));
+		tokenRepository.save(tokenBlackList);
 	}
 
 	private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
