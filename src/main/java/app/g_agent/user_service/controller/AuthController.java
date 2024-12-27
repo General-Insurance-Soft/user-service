@@ -118,14 +118,14 @@ public class AuthController {
 
 				if (jwtService.isTokenValid(token, user, accessTokenType)) {
 					UserTokenResponse userTokenResponse = jwtService.getTokenUserResponse(user);
-					Message message=new Message();
+					Message message = new Message();
 					message.setNameString("success");
 					message.setMessageString("valid token");
 					return ResponseEntity.ok(message);
 				} else {
 					Message message = new Message();
 					message.setNameString("Unauthorized");
-					message.setMessageString("Invalid refresh token");
+					message.setMessageString("Invalid token");
 					responseEntity = ResponseEntity.status(401).body(message);
 				}
 			}
@@ -136,13 +136,6 @@ public class AuthController {
 			message.setMessageString(e.getMessage());
 			return ResponseEntity.status(400).body(message);
 		}
-
-	}
-
-	@GetMapping("/index")
-	public String index() {
-
-		return "logged in successfully";
 
 	}
 
