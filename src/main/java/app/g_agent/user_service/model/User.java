@@ -23,12 +23,17 @@ public class User implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	
 	@Column(name = "first_name")
 	private String firstName;
+	
 	@Column(name = "second_name")
 	private String secondName;
+	
 	@Column(name = "third_name")
+	
 	private String thirdName;
+	
 	private String phone;
 	private String email;
 	private String password;
