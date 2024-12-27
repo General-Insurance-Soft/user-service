@@ -46,6 +46,12 @@ public class AuthController {
 	@Value("${security.jwt.refresh-expiration-time}")
 	private long jwtRefreshExpiration;
 
+	@Value("${security.jwt.access-token-type}")
+	private String accessTokenType;
+
+	@Value("${security.jwt.refresh-token-type}")
+	private String refreshTokenType;
+
 	@PostMapping("/authenticate")
 	public ResponseEntity<?> authenticate(@RequestBody LoginRequest loginRequest) {
 		User user = null;
@@ -77,10 +83,45 @@ public class AuthController {
 			if (userEmail != null) {
 				UserDetails user = userDetailsService.loadUserByUsername(userEmail);
 
-				if (jwtService.isTokenValid(refreshToken, user, "refresh")) {
+				if (jwtService.isTokenValid(refreshToken, user, refreshTokenType)) {
 					UserTokenResponse userTokenResponse = jwtService.getTokenUserResponse(user);
 					jwtService.persistUsedToken(refreshToken);
 					return ResponseEntity.ok(userTokenResponse);
+				} else {
+					Message message = new Message();
+					message.setNameString("Unauthorized");
+					message.setMessageString("Invalid refresh token");
+					responseEntity = ResponseEntity.status(401).body(message);
+				}
+			}
+			return responseEntity;
+		} catch (Exception e) {
+			Message message = new Message();
+			message.setNameString("Unauthorized");
+			message.setMessageString(e.getMessage());
+			return ResponseEntity.status(400).body(message);
+		}
+
+	}
+
+	@PostMapping("/validate-token")
+	public ResponseEntity<?> validateToken(@RequestBody Map<String, String> request) {
+		logger.info("Refresh token request =====> " + request);
+		String token = request.get("token");
+		ResponseEntity<?> responseEntity = null;
+
+		try {
+			final String userEmail = jwtService.extractUsername(token);
+
+			if (userEmail != null) {
+				UserDetails user = userDetailsService.loadUserByUsername(userEmail);
+
+				if (jwtService.isTokenValid(token, user, accessTokenType)) {
+					UserTokenResponse userTokenResponse = jwtService.getTokenUserResponse(user);
+					Message message=new Message();
+					message.setNameString("success");
+					message.setMessageString("valid token");
+					return ResponseEntity.ok(message);
 				} else {
 					Message message = new Message();
 					message.setNameString("Unauthorized");
