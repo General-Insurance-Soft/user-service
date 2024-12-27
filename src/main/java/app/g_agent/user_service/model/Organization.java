@@ -73,22 +73,20 @@ public class Organization {
 		this.logo = logo;
 	}
 
-	@Override
-	public String toString() {
-		return "Organization{" + "name='" + name + '\'' + ", address='" + address + '\'' + ", phone='" + phone + '\''
-				+ ", email='" + email + '\'' + ", website='" + website + '\'' + ", logo=" + logo + '}';
+	public Long getId() {
+		return id;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		Organization organization = (Organization) o;
-		return name.equals(organization.name) && address.equals(organization.address)
-				&& phone.equals(organization.phone) && email.equals(organization.email)
-				&& website.equals(organization.website) && logo.equals(organization.logo);
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public List<User> getUsers() {
+		return users;
+	}
+
+	public void setUsers(List<User> users) {
+		this.users = users;
 	}
 
 }
