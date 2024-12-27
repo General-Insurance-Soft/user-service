@@ -133,26 +133,46 @@ public class JwtService {
 	}
 
 	private Claims extractAllClaims(String token) {
-		Claims claims = null;
 		try {
-			claims = Jwts.parserBuilder().setSigningKey(getSignInKey()) // Pass the SecretKey directly
-					.build().parseClaimsJws(token).getBody();
-			return claims;
+			return Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
 		} catch (ExpiredJwtException e) {
-			throw new RuntimeException("Token has expired");
+			throw new TokenExpiredException("Token has expired");
 		} catch (MalformedJwtException e) {
-			throw new RuntimeException("Malformed token");
+			throw new MalformedTokenException("Malformed token");
 		} catch (SignatureException e) {
-			throw new RuntimeException("Invalid token signature");
+			throw new InvalidTokenSignatureException("Invalid token signature");
 		} catch (Exception e) {
-			throw new RuntimeException("Invalid token");
+			throw new InvalidTokenException("Invalid token");
 		}
-
 	}
 
 	private SecretKey getSignInKey() {
 		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
 		return Keys.hmacShaKeyFor(keyBytes); // This returns a SecretKey
+	}
+
+	public class TokenExpiredException extends RuntimeException {
+		public TokenExpiredException(String message) {
+			super(message);
+		}
+	}
+
+	public class MalformedTokenException extends RuntimeException {
+		public MalformedTokenException(String message) {
+			super(message);
+		}
+	}
+
+	public class InvalidTokenSignatureException extends RuntimeException {
+		public InvalidTokenSignatureException(String message) {
+			super(message);
+		}
+	}
+
+	public class InvalidTokenException extends RuntimeException {
+		public InvalidTokenException(String message) {
+			super(message);
+		}
 	}
 
 }
