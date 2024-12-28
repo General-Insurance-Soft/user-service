@@ -20,7 +20,7 @@ public class RoleDto {
 	@NotNull(message = "Authorities list cannot be null")
 	@NotEmpty(message = "Authorities list cannot be empty")
 	@Valid // Ensure validation is applied to each element in the list
-	private List<AuthorityDto> authorities;
+	private List<Long> authorities;
 
 	public Long getRoleId() {
 		return roleId;
@@ -38,11 +38,11 @@ public class RoleDto {
 		this.name = name;
 	}
 
-	public List<AuthorityDto> getAuthorities() {
+	public List<Long> getAuthorities() {
 		return authorities;
 	}
 
-	public void setAuthorities(List<AuthorityDto> authorities) {
+	public void setAuthorities(List<Long> authorities) {
 		this.authorities = authorities;
 	}
 

@@ -1,11 +1,12 @@
 package app.g_agent.user_service.model;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class User implements UserDetails {
@@ -23,35 +25,41 @@ public class User implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
+
 	@Column(name = "first_name")
 	private String firstName;
-	
+
 	@Column(name = "second_name")
 	private String secondName;
-	
+
 	@Column(name = "third_name")
-	
+
 	private String thirdName;
-	
+
 	private String phone;
+
 	private String email;
+
 	private String password;
-	@Column(nullable = false)
-	private String role;
+
+	@OneToOne
+	private Role role;
+
 	@ManyToOne
 	@JoinColumn(name = "organization_id", nullable = false)
 	private Organization organization;
-	@Column(name = "updated_by")
-	private String updatedBy;
 
-	@CreationTimestamp
+	@OneToOne
+	@JoinColumn(name = "updated_by_id")
+	private User updatedBy;
+
+	@CreatedDate
 	@Column(updatable = false, name = "created_at")
-	private Date createdAt;
+	private LocalDateTime createdAt;
 
-	@UpdateTimestamp
+	@LastModifiedDate
 	@Column(name = "updated_at")
-	private Date updatedAt;
+	private LocalDateTime updatedAt;
 
 	public static class Builder {
 		private Long id;
@@ -61,7 +69,8 @@ public class User implements UserDetails {
 		private String phone;
 		private String email;
 		private String password;
-		private String role;
+		private Role role;
+		private Organization organization;
 
 		public Builder setId(Long id) {
 			this.id = id;
@@ -98,7 +107,7 @@ public class User implements UserDetails {
 			return this;
 		}
 
-		public Builder setRole(String role) {
+		public Builder setRole(Role role) {
 			this.role = role;
 			return this;
 		}
@@ -113,6 +122,7 @@ public class User implements UserDetails {
 			user.email = this.email;
 			user.password = this.password;
 			user.role = this.role;
+			user.organization = this.organization;
 			return user;
 		}
 	}
@@ -183,11 +193,11 @@ public class User implements UserDetails {
 		this.email = userName;
 	}
 
-	public String getRole() {
+	public Role getRole() {
 		return this.role;
 	}
 
-	public void setRole(String role) {
+	public void setRole(Role role) {
 		this.role = role;
 	}
 
@@ -196,28 +206,36 @@ public class User implements UserDetails {
 		return Collections.emptyList();
 	}
 
-	public Date getCreatedAt() {
+	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(Date createdAt) {
+	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	public Date getUpdatedAt() {
+	public LocalDateTime getUpdatedAt() {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt(Date updatedAt) {
+	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 
-	public String getUpdatedBy() {
+	public User getUpdatedBy() {
 		return updatedBy;
 	}
 
-	public void setUpdatedBy(String updatedBy) {
+	public void setUpdatedBy(User updatedBy) {
 		this.updatedBy = updatedBy;
+	}
+
+	public Organization getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(Organization organization) {
+		this.organization = organization;
 	}
 
 }

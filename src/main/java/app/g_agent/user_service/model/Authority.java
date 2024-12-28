@@ -15,15 +15,16 @@ public class Authority {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+
 	@Column(name = "name")
 	private String authorityName;
+
 	@ManyToOne
 	@JoinColumn(name = "role_id", nullable = false)
 	private Role role;
+
 	@Column(name = "created_at")
 	private Date createdAt;
-	@Column(name = "updated_by")
-	private Long updateBy;
 
 	public Long getId() {
 		return id;
@@ -47,14 +48,6 @@ public class Authority {
 
 	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
-	}
-
-	public Long getUpdateBy() {
-		return updateBy;
-	}
-
-	public void setUpdateBy(Long updateBy) {
-		this.updateBy = updateBy;
 	}
 
 	public Role getrole() {

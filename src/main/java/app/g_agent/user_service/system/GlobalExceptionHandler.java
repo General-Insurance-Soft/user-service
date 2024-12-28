@@ -3,6 +3,8 @@ package app.g_agent.user_service.system;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -10,9 +12,17 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.NoHandlerFoundException;
+
+import app.g_agent.user_service.service.JwtService.InvalidTokenException;
+import app.g_agent.user_service.service.JwtService.InvalidTokenSignatureException;
+import app.g_agent.user_service.service.JwtService.MalformedTokenException;
+import app.g_agent.user_service.service.JwtService.TokenExpiredException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+	private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -25,11 +35,43 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
 	}
 
+	@ExceptionHandler(NoHandlerFoundException.class)
+	public ResponseEntity<String> handleNotFoundException(NoHandlerFoundException ex) {
+
+		Map<String, String> errors = new HashMap<>();
+		String path = ex.getRequestURL();
+		String errorMessage = ex.getLocalizedMessage();
+		ErrorDetails errorDetails = new ErrorDetails(404, errorMessage, path);
+
+		return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(TokenExpiredException.class)
+	public ResponseEntity<Object> handleTokenExpiredException(TokenExpiredException ex) {
+		return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(MalformedTokenException.class)
+	public ResponseEntity<Object> handleMalformedTokenException(MalformedTokenException ex) {
+		return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(InvalidTokenSignatureException.class)
+	public ResponseEntity<Object> handleInvalidTokenSignatureException(InvalidTokenSignatureException ex) {
+		return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.UNAUTHORIZED);
+	}
+
+	@ExceptionHandler(InvalidTokenException.class)
+	public ResponseEntity<Object> handleInvalidTokenException(InvalidTokenException ex) {
+		return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.BAD_REQUEST);
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Object> handleGlobalException(Exception ex, WebRequest request) {
 		ErrorDetails errorDetails = new ErrorDetails(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-				"An unexpected error occurred. Please try again later.",
+				"An unexpected error occurred. "+ ex.getLocalizedMessage(),
 				request.getDescription(false).replace("uri=", ""));
+		logger.info("Error caught ==========> " + ex.getMessage());
 		return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }
