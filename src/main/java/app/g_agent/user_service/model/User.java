@@ -3,15 +3,16 @@ package app.g_agent.user_service.model;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,10 +21,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+
 	private Long id;
 
 	@Column(name = "first_name")
@@ -38,11 +41,12 @@ public class User implements UserDetails {
 
 	private String phone;
 
+	@Column(unique = true, nullable = false)
 	private String email;
 
 	private String password;
 
-	@OneToOne
+	@ManyToOne
 	private Role role;
 
 	@ManyToOne
@@ -54,11 +58,11 @@ public class User implements UserDetails {
 	private User updatedBy;
 
 	@CreatedDate
-	@Column(updatable = false, name = "created_at")
+	@Column(updatable = false, name = "created_at", nullable = false)
 	private LocalDateTime createdAt;
 
 	@LastModifiedDate
-	@Column(name = "updated_at")
+	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
 	public static class Builder {
