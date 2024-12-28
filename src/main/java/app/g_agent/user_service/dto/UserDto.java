@@ -21,10 +21,12 @@ public class UserDto implements Serializable {
 	@JsonProperty("first_name")
 	private String firstName;
 
+	@JsonProperty("second_name")
 	private String secondName;
 
 	@NotBlank(message = "Third name cannot be blank")
 	@NotNull(message = "Third name is required")
+	@JsonProperty("third_name")
 	private String thirdName;
 
 	@NotBlank(message = "First name is required")
