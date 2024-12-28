@@ -53,7 +53,7 @@ public class User implements UserDetails {
 	@JoinColumn(name = "organization_id", nullable = false)
 	private Organization organization;
 
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name = "updated_by_id")
 	private User updatedBy;
 
