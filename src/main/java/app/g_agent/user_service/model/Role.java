@@ -1,22 +1,27 @@
 package app.g_agent.user_service.model;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
+@Table(name = "role", uniqueConstraints = { @UniqueConstraint(columnNames = { "organization", "name" }) })
+@EntityListeners(AuditingEntityListener.class)
 public class Role {
 
 	@Id
@@ -27,11 +32,11 @@ public class Role {
 	private String roleName;
 
 	@CreatedDate
-	@Column(updatable = false, name = "created_at")
+	@Column(updatable = false, name = "created_at", nullable = false)
 	private LocalDateTime createdAt;
 
 	@LastModifiedDate
-	@Column(name = "updated_at")
+	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
 	@OneToOne

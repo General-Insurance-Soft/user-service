@@ -1,6 +1,8 @@
 package app.g_agent.user_service.service;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,7 @@ import app.g_agent.user_service.model.Role;
 import app.g_agent.user_service.model.User;
 import app.g_agent.user_service.repository.RoleRepository;
 import app.g_agent.user_service.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class UserService {// implements UserDetailsService {
@@ -18,13 +21,18 @@ public class UserService {// implements UserDetailsService {
 	private BCryptPasswordEncoder passwordEncoder;
 	OrganizationService organizationService;
 	RoleRepository roleRepository;
+	JwtService jwtService;
+	UserDetailsService userDetailsService;
 
 	public UserService(UserRepository userRepository, OrganizationService organizationService,
-			RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
+			RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder, JwtService jwtService,
+			UserDetailsService userDetailsService) {
 		this.userRepository = userRepository;
 		this.organizationService = organizationService;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.jwtService = jwtService;
+		this.userDetailsService = userDetailsService;
 	}
 
 	public void createUser(UserDto userDto) throws Exception {
@@ -41,16 +49,28 @@ public class UserService {// implements UserDetailsService {
 		user.setSecondName(userDto.getSecondName());
 		user.setThirdName(userDto.getThirdName());
 		user.setFirstName(userDto.getFirstName());
-		
+
 		try {
 			userRepository.save(user);
-        } catch (DataIntegrityViolationException ex) {
-            if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
-                throw new Exception("A user with this email already exists.");
-            }
-            throw ex; // Rethrow if not related to constraint violation
-        }
-		
+		} catch (DataIntegrityViolationException ex) {
+			if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+				throw new Exception("A user with this email already exists.");
+			}
+			throw ex; // Rethrow if not related to constraint violation
+		}
+
+	}
+
+	public User getCurrentUser(HttpServletRequest request) {
+
+		String authHeader = request.getHeader("Authorization");
+
+		final String jwt = authHeader.substring(7);
+
+		String userEmail = jwtService.extractUsername(jwt);
+
+		UserDetails user = userDetailsService.loadUserByUsername(userEmail);
+		return (User) user;
 	}
 
 }
