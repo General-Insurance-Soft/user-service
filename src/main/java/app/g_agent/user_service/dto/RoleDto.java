@@ -22,6 +22,8 @@ public class RoleDto {
 	@Valid // Ensure validation is applied to each element in the list
 	private List<Long> authorities;
 
+	private Long organizationId;
+
 	public Long getRoleId() {
 		return roleId;
 	}
@@ -44,6 +46,14 @@ public class RoleDto {
 
 	public void setAuthorities(List<Long> authorities) {
 		this.authorities = authorities;
+	}
+
+	public Long getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(Long organizationId) {
+		this.organizationId = organizationId;
 	}
 
 	@Override

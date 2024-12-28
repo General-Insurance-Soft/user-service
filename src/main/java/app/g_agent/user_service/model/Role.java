@@ -11,16 +11,20 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "role", uniqueConstraints = { @UniqueConstraint(columnNames = { "organization", "name" }) })
+@Table(name = "role", uniqueConstraints = { @UniqueConstraint(columnNames = { "organization_id", "name" }) })
 @EntityListeners(AuditingEntityListener.class)
 public class Role {
 
@@ -29,7 +33,7 @@ public class Role {
 	private Long id;
 
 	@Column(name = "name")
-	private String roleName;
+	private String name;
 
 	@CreatedDate
 	@Column(updatable = false, name = "created_at", nullable = false)
@@ -39,13 +43,15 @@ public class Role {
 	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
-	@OneToOne
+	@ManyToOne
 	private User updatedBy;
 
-	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "role_authority", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "authority_id"))
 	private List<Authority> authorities;
 
-	@OneToOne
+	@ManyToOne
+	@JoinColumn(name = "organization_id", nullable = false)
 	Organization organization;
 
 	public Long getId() {
@@ -56,12 +62,12 @@ public class Role {
 		this.id = id;
 	}
 
-	public String getRoleName() {
-		return roleName;
+	public String getName() {
+		return name;
 	}
 
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -102,6 +108,16 @@ public class Role {
 
 	public void setOrganization(Organization organization) {
 		this.organization = organization;
+	}
+
+	@Override
+	public String toString() {
+		return "Role [id=" + id + ", name=" + name + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
+				+ ", updatedBy=" + updatedBy + ", authorities=" + authorities + ", organization=" + organization
+				+ ", getId()=" + getId() + ", getName()=" + getName() + ", getCreatedAt()=" + getCreatedAt()
+				+ ", getUpdatedAt()=" + getUpdatedAt() + ", getUpdatedBy()=" + getUpdatedBy() + ", getAuthorities()="
+				+ getAuthorities() + ", getOrganization()=" + getOrganization() + ", getClass()=" + getClass()
+				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
 	}
 
 }

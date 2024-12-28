@@ -7,8 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Authority {
@@ -18,10 +16,6 @@ public class Authority {
 
 	@Column(name = "name")
 	private String authorityName;
-
-	@ManyToOne
-	@JoinColumn(name = "role_id", nullable = false)
-	private Role role;
 
 	@Column(name = "created_at")
 	private Date createdAt;
@@ -38,24 +32,12 @@ public class Authority {
 		return authorityName;
 	}
 
-	public void setRoleName(String authorityName) {
-		this.authorityName = authorityName;
-	}
-
 	public Date getCreatedAt() {
 		return createdAt;
 	}
 
 	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
-	}
-
-	public Role getrole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
 	}
 
 	public void setAuthorityName(String authorityName) {

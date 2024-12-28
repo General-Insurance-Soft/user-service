@@ -2,6 +2,8 @@ package app.g_agent.user_service.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class RoleService {
+
+	private static final Logger logger = LoggerFactory.getLogger(RoleService.class);
 
 	private RoleRepository roleRepository;
 	private AuthorityService authorityService;
@@ -36,8 +40,10 @@ public class RoleService {
 
 		Role role = new Role();
 		role.setAuthorities(authorities);
-		role.setRoleName(roleDto.getName());
+		role.setName(roleDto.getName());
 		role.setUpdatedBy(UserService.getCurrentUser(request));
+		role.setOrganization(UserService.getCurrentUser(request).getOrganization());
+		logger.info("Role to persist ==========> " + role);
 		try {
 			roleRepository.save(role);
 		} catch (DataIntegrityViolationException ex) {
