@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.g_agent.user_service.dto.UserDto;
 import app.g_agent.user_service.service.UserService;
+import app.g_agent.user_service.system.commons.Message;
 import jakarta.validation.Valid;
 
 @RestController
@@ -40,7 +41,17 @@ public class UserController {
 	@PostMapping("/create-user")
 	public ResponseEntity<?> createUser(@Valid @RequestBody UserDto userDto) {
 		logger.info("User DTO from requerst " + userDto.toString());
-		userService.createUser(userDto);
-		return ResponseEntity.ok("User created successfully");
+		Message message = new Message();
+		try {
+			userService.createUser(userDto);
+		} catch (Exception ex) {
+			message.setNameString("Error");
+			message.setMessageString(ex.getMessage());
+			return ResponseEntity.status(403).body(message);
+
+		}
+		message.setNameString("Success");
+		message.setMessageString("User created successfully");
+		return ResponseEntity.ok(message);
 	}
 }
