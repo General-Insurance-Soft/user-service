@@ -46,4 +46,11 @@ public class RoleDto {
 		this.authorities = authorities;
 	}
 
+	@Override
+	public String toString() {
+		return "RoleDto [roleId=" + roleId + ", name=" + name + ", authorities=" + authorities + ", getRoleId()="
+				+ getRoleId() + ", getName()=" + getName() + ", getAuthorities()=" + getAuthorities() + ", getClass()="
+				+ getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+	}
+
 }
