@@ -28,7 +28,7 @@ public class OrganizationController {
 	@Autowired
 	OrganizationService organizationService;
 
-	@PostMapping("/create-organization")
+	@PostMapping("/create")
 	public ResponseEntity<?> createOrganization(HttpServletRequest request,
 			@Valid @RequestBody OrganizationDto organizationDto) {
 		logger.info("Role DTO from requerst " + organizationDto.toString());

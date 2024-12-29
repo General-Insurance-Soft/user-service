@@ -1,6 +1,7 @@
 package app.g_agent.user_service.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import app.g_agent.user_service.dto.RoleDto;
 import app.g_agent.user_service.model.Authority;
 import app.g_agent.user_service.model.Role;
+import app.g_agent.user_service.model.User;
 import app.g_agent.user_service.repository.RoleRepository;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -50,6 +52,20 @@ public class RoleService {
 				throw new Exception("This role already exists.");
 			}
 			throw ex; // Rethrow if not related to constraint violation
+		}
+
+	}
+
+	public void deleteRole(HttpServletRequest request, Long id) throws Exception {
+		User user = contextService.getCurrentUser(request);
+
+		Optional<Role> role = roleRepository.findByRoleIdAndOrganizationId(id, user.getOrganization().getId());
+
+		logger.info("To delete role ==========> id: " + id);
+		if (role.isPresent()) {
+			roleRepository.delete(role.get());
+		} else {
+			throw new Exception("The role does not exists.");
 		}
 
 	}

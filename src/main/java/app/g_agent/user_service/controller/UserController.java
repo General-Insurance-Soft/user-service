@@ -38,7 +38,7 @@ public class UserController {
 
 	}
 
-	@PostMapping("/create-user")
+	@PostMapping("/create")
 	public ResponseEntity<?> createUser(@Valid @RequestBody UserDto userDto) {
 		logger.info("User DTO from requerst " + userDto.toString());
 		Message message = new Message();
