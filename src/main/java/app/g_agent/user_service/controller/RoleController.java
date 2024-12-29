@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.g_agent.user_service.dto.RoleDto;
@@ -28,7 +29,7 @@ public class RoleController {
 	RoleService roleService;
 
 	@PostMapping("/create")
-	public ResponseEntity<?> createUser(HttpServletRequest request, @Valid @RequestBody RoleDto roleDto) {
+	public ResponseEntity<?> createRole(HttpServletRequest request, @Valid @RequestBody RoleDto roleDto) {
 		logger.info("Role DTO from requerst " + roleDto.toString());
 		Message message = new Message();
 		try {
@@ -43,13 +44,13 @@ public class RoleController {
 		message.setMessageString("Role created successfully");
 		return ResponseEntity.ok(message);
 	}
-	
+
 	@DeleteMapping("/delete")
-	public ResponseEntity<?> createUser(HttpServletRequest request, @Valid @RequestBody RoleDto roleDto) {
-		logger.info("Role DTO from requerst " + roleDto.toString());
+	public ResponseEntity<?> deleteRole(HttpServletRequest request, @RequestParam Long role) {
+
 		Message message = new Message();
 		try {
-			roleService.createRole(request, roleDto);
+			roleService.deleteRole(request, role);
 		} catch (Exception ex) {
 			message.setNameString("Error");
 			message.setMessageString(ex.getMessage());
@@ -57,7 +58,7 @@ public class RoleController {
 
 		}
 		message.setNameString("Success");
-		message.setMessageString("Role created successfully");
+		message.setMessageString("Role deleted successfully");
 		return ResponseEntity.ok(message);
 	}
 }

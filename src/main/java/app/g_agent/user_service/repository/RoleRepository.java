@@ -9,5 +9,5 @@ import app.g_agent.user_service.model.Role;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
-	Optional<Role> findByRoleIdAndOrganizationId(Long id, Long organizationId);
-}
+	Optional<Role> findByIdAndOrganizationId(Long id, Long organizationId);
+} 
