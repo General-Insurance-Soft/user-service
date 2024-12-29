@@ -43,7 +43,7 @@ public class OrganizationService {
 			oganizationRepository.save(organization);
 		} catch (DataIntegrityViolationException ex) {
 			if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
-				throw new Exception("This organization already exists.");
+				throw new Exception("This organization or user already exists. Can't create new organization");
 			}
 			throw ex; // Rethrow if not related to constraint violation
 		}
