@@ -21,13 +21,13 @@ public class RoleService {
 
 	private RoleRepository roleRepository;
 	private AuthorityService authorityService;
-	private UserService UserService;
+	private ContextService contextService;
 
 	public RoleService(RoleRepository roleRepository, AuthorityService authorityService,
-			UserDetailsService userDetailsService, UserService UserService) {
+			UserDetailsService userDetailsService, ContextService contextService) {
 		this.roleRepository = roleRepository;
 		this.authorityService = authorityService;
-		this.UserService = UserService;
+		this.contextService = contextService;
 	}
 
 	public Role getRoleById(Long id) {
@@ -41,8 +41,7 @@ public class RoleService {
 		Role role = new Role();
 		role.setAuthorities(authorities);
 		role.setName(roleDto.getName());
-		role.setUpdatedBy(UserService.getCurrentUser(request));
-		role.setOrganization(UserService.getCurrentUser(request).getOrganization());
+		role.setUpdatedBy(contextService.getCurrentUser(request));
 		logger.info("Role to persist ==========> " + role);
 		try {
 			roleRepository.save(role);
