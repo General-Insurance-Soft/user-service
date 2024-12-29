@@ -6,17 +6,23 @@ import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
+@Table(name = "organization", uniqueConstraints = { @UniqueConstraint(columnNames = { "updated_by_id", "name" }) })
+@EntityListeners(AuditingEntityListener.class)
 public class Organization {
 
 	@Id
@@ -24,7 +30,7 @@ public class Organization {
 	private Long id;
 	private String name;
 
-	private String address;
+	private Long address;
 
 	private String phone;
 
@@ -38,11 +44,11 @@ public class Organization {
 	private List<User> users;
 
 	@CreatedDate
-	@Column(updatable = false, name = "created_at")
+	@Column(updatable = false, name = "created_at", nullable = false)
 	private LocalDateTime createdAt;
 
 	@LastModifiedDate
-	@Column(name = "updated_at")
+	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
 	@OneToOne
@@ -50,10 +56,6 @@ public class Organization {
 
 	public String getName() {
 		return name;
-	}
-
-	public String getAddress() {
-		return address;
 	}
 
 	public String getPhone() {
@@ -74,10 +76,6 @@ public class Organization {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
 	}
 
 	public void setPhone(String phone) {
@@ -136,6 +134,24 @@ public class Organization {
 		this.updatedBy = updatedBy;
 	}
 
-	
-	
+	public Long getAddress() {
+		return address;
+	}
+
+	public void setAddress(Long address) {
+		this.address = address;
+	}
+
+	@Override
+	public String toString() {
+		return "Organization [id=" + id + ", name=" + name + ", address=" + address + ", phone=" + phone + ", email="
+				+ email + ", website=" + website + ", logo=" + logo + ", users=" + users + ", createdAt=" + createdAt
+				+ ", updatedAt=" + updatedAt + ", updatedBy=" + updatedBy + ", getName()=" + getName() + ", getPhone()="
+				+ getPhone() + ", getEmail()=" + getEmail() + ", getWebsite()=" + getWebsite() + ", getLogo()="
+				+ getLogo() + ", getId()=" + getId() + ", getUsers()=" + getUsers() + ", getCreatedAt()="
+				+ getCreatedAt() + ", getUpdatedAt()=" + getUpdatedAt() + ", getUpdatedBy()=" + getUpdatedBy()
+				+ ", getAddress()=" + getAddress() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode()
+				+ ", toString()=" + super.toString() + "]";
+	}
+
 }
