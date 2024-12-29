@@ -21,18 +21,14 @@ public class UserService {// implements UserDetailsService {
 	private BCryptPasswordEncoder passwordEncoder;
 	OrganizationService organizationService;
 	RoleRepository roleRepository;
-	JwtService jwtService;
-	UserDetailsService userDetailsService;
 
 	public UserService(UserRepository userRepository, OrganizationService organizationService,
-			RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder, JwtService jwtService,
-			UserDetailsService userDetailsService) {
+			RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.organizationService = organizationService;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
-		this.jwtService = jwtService;
-		this.userDetailsService = userDetailsService;
+
 	}
 
 	public void createUser(UserDto userDto) throws Exception {
@@ -59,18 +55,6 @@ public class UserService {// implements UserDetailsService {
 			throw ex; // Rethrow if not related to constraint violation
 		}
 
-	}
-
-	public User getCurrentUser(HttpServletRequest request) {
-
-		String authHeader = request.getHeader("Authorization");
-
-		final String jwt = authHeader.substring(7);
-
-		String userEmail = jwtService.extractUsername(jwt);
-
-		UserDetails user = userDetailsService.loadUserByUsername(userEmail);
-		return (User) user;
 	}
 
 }
