@@ -41,14 +41,14 @@ public class UserDto implements Serializable {
 
 	@NotBlank(message = "Password is required")
 	@Size(min = 8, message = "Password must be at least 8 characters long")
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
 
 	@NotNull(message = "Role is required")
 	private Long role;
 
 	@NotNull(message = "Organization field required")
-	@JsonIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Long organization;
 
 	public Long getId() {
