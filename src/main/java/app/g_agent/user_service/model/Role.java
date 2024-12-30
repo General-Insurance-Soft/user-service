@@ -50,7 +50,7 @@ public class Role {
 	private User updatedBy;
 
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(joinColumns = @JoinColumn(name = "authority_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@JoinTable(joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "authority_id"))
 	@JsonManagedReference
 	private Set<Authority> authority = new HashSet<Authority>();
 

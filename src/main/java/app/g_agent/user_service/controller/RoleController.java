@@ -83,7 +83,7 @@ public class RoleController {
 	}
 
 	@PutMapping("/update")
-	public ResponseEntity<?> updateRole(HttpServletRequest request, @Valid @RequestBody RoleDto roleDto,
+	public ResponseEntity<?> updateRole(HttpServletRequest request, @RequestBody RoleDto roleDto,
 			@RequestParam Long role) {
 		logger.info("Role DTO from requerst " + roleDto.toString());
 		Message message = new Message();

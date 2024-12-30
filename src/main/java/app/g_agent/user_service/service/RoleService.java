@@ -64,13 +64,41 @@ public class RoleService {
 	}
 
 	public void updateRole(HttpServletRequest request, RoleDto roleDto, Long id) throws Exception {
-		Set<Authority> authorities = authorityService.getAuthorityByIds(roleDto.getAuthorities());
+
 		User user = contextService.getCurrentUser(request);
+		Role currentRole = this.getRoleById(id);
 		Role role = new Role();
+
 		logger.info("Role values to update ==========> " + roleDto.toString());
 		role.setId(id);
-		role.setAuthority(authorities);
-		role.setName(roleDto.getName());
+
+		// authorities
+		if (roleDto.getAuthorities() == null) {
+
+			role.setAuthority(currentRole.getAuthority());
+		} else {
+
+			if (roleDto.getAuthorities().isEmpty()) {
+				throw new Exception("Authorities cannot be empty");
+			}
+			Set<Authority> authorities = authorityService.getAuthorityByIds(roleDto.getAuthorities());
+
+			role.setAuthority(authorities);
+		}
+
+		// name
+		if (roleDto.getName() == null) {
+
+			role.setName(currentRole.getName());
+		} else {
+
+			if (roleDto.getName().isBlank()) {
+				throw new Exception("The value of name is not valid");
+			}
+
+			role.setName(roleDto.getName());
+		}
+
 		role.setUpdatedBy(user);
 		role.setOrganization(user.getOrganization());
 		logger.info("Role to persist ==========> " + role);
