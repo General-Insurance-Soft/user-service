@@ -1,11 +1,15 @@
 package app.g_agent.user_service.model;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -19,7 +23,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -46,9 +49,10 @@ public class Role {
 	@ManyToOne
 	private User updatedBy;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "role_authority", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "authority_id"))
-	private List<Authority> authorities;
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(joinColumns = @JoinColumn(name = "authority_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@JsonManagedReference
+	private Set<Authority> authority = new HashSet<Authority>();
 
 	@ManyToOne
 	@JoinColumn(name = "organization_id", nullable = false)
@@ -94,12 +98,12 @@ public class Role {
 		this.updatedBy = updatedBy;
 	}
 
-	public List<Authority> getAuthorities() {
-		return authorities;
+	public Set<Authority> getAuthority() {
+		return authority;
 	}
 
-	public void setAuthorities(List<Authority> authorities) {
-		this.authorities = authorities;
+	public void setAuthority(Set<Authority> authority) {
+		this.authority = authority;
 	}
 
 	public Organization getOrganization() {
@@ -108,16 +112,6 @@ public class Role {
 
 	public void setOrganization(Organization organization) {
 		this.organization = organization;
-	}
-
-	@Override
-	public String toString() {
-		return "Role [id=" + id + ", name=" + name + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
-				+ ", updatedBy=" + updatedBy + ", authorities=" + authorities + ", organization=" + organization
-				+ ", getId()=" + getId() + ", getName()=" + getName() + ", getCreatedAt()=" + getCreatedAt()
-				+ ", getUpdatedAt()=" + getUpdatedAt() + ", getUpdatedBy()=" + getUpdatedBy() + ", getAuthorities()="
-				+ getAuthorities() + ", getOrganization()=" + getOrganization() + ", getClass()=" + getClass()
-				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
 	}
 
 }
