@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,11 +32,13 @@ public class RoleController {
 
 	@PostMapping("/create")
 	public ResponseEntity<?> createRole(HttpServletRequest request, @Valid @RequestBody RoleDto roleDto) {
-		logger.info("Role DTO from requerst " + roleDto.toString());
+		logger.info("Role DTO from requerst =======>" + roleDto.toString());
+		roleDto.getAuthorities().forEach(item -> logger.debug("Authorities passed from request=====> " + item));
 		Message message = new Message();
 		try {
 			roleService.createRole(request, roleDto);
 		} catch (Exception ex) {
+			logger.info("Authorities to fetch=====> " + ex.getMessage());
 			message.setNameString("Error");
 			message.setMessageString(ex.getMessage());
 			return ResponseEntity.status(403).body(message);
@@ -77,5 +80,23 @@ public class RoleController {
 
 		}
 
+	}
+
+	@PutMapping("/update")
+	public ResponseEntity<?> updateRole(HttpServletRequest request, @Valid @RequestBody RoleDto roleDto,
+			@RequestParam Long role) {
+		logger.info("Role DTO from requerst " + roleDto.toString());
+		Message message = new Message();
+		try {
+			roleService.updateRole(request, roleDto, role);
+		} catch (Exception ex) {
+			message.setNameString("Error");
+			message.setMessageString(ex.getMessage());
+			return ResponseEntity.status(403).body(message);
+
+		}
+		message.setNameString("Success");
+		message.setMessageString("Role updated successfully");
+		return ResponseEntity.ok(message);
 	}
 }

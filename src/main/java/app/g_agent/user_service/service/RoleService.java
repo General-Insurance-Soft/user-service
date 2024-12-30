@@ -2,6 +2,7 @@ package app.g_agent.user_service.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,11 +39,37 @@ public class RoleService {
 	}
 
 	public void createRole(HttpServletRequest request, RoleDto roleDto) throws Exception {
-		List<Authority> authorities = authorityService.getAuthorityByIds(roleDto.getAuthorities());
+		Set<Authority> authorities = authorityService.getAuthorityByIds(roleDto.getAuthorities());
 		User user = contextService.getCurrentUser(request);
 		Role role = new Role();
+		roleDto.getAuthorities().forEach(item -> logger
+				.debug("Authorities passed from request=====> " + item + " and fected size " + authorities.size()));
+
 		logger.info("Set role values ==========> ");
-		role.setAuthorities(authorities);
+		role.setAuthority(authorities);
+		role.setName(roleDto.getName());
+		role.setUpdatedBy(user);
+		role.setOrganization(user.getOrganization());
+		logger.info("Role to persist ==========> " + role.toString());
+		try {
+			roleRepository.save(role);
+		} catch (DataIntegrityViolationException ex) {
+			if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+				logger.info("Role error ==========> id: " + ex.getMessage());
+				throw new Exception("This role already exists.");
+			}
+			throw ex; // Rethrow if not related to constraint violation
+		}
+
+	}
+
+	public void updateRole(HttpServletRequest request, RoleDto roleDto, Long id) throws Exception {
+		Set<Authority> authorities = authorityService.getAuthorityByIds(roleDto.getAuthorities());
+		User user = contextService.getCurrentUser(request);
+		Role role = new Role();
+		logger.info("Role values to update ==========> " + roleDto.toString());
+		role.setId(id);
+		role.setAuthority(authorities);
 		role.setName(roleDto.getName());
 		role.setUpdatedBy(user);
 		role.setOrganization(user.getOrganization());
