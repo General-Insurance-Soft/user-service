@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import app.g_agent.user_service.dto.RoleDto;
 import app.g_agent.user_service.dto.UserDto;
 import app.g_agent.user_service.model.Organization;
 import app.g_agent.user_service.model.Role;
@@ -73,6 +74,30 @@ public class UserService {// implements UserDetailsService {
 		logger.info("To delete user ==========> id: " + id);
 		if (user.isPresent()) {
 			userRepository.delete(user.get());
+		} else {
+			throw new Exception("The user does not exists.");
+		}
+
+	}
+
+	public UserDto getUser(HttpServletRequest request, Long id) throws Exception {
+		User currentUser = contextService.getCurrentUser(request);
+
+		Optional<User> user = userRepository.findByIdAndOrganizationId(id, currentUser.getOrganization().getId());
+
+		logger.info("To get user ==========> id: " + id);
+		
+
+		if (user.isPresent()) {
+			UserDto userDto = new UserDto();
+			userDto.setId(user.get().getId());
+			userDto.setEmail(user.get().getEmail());
+			userDto.setFirstName(user.get().getFirstName());
+			userDto.setPhone(user.get().getPhone());
+			userDto.setRole(user.get().getRole().getId());
+			userDto.setSecondName(user.get().getSecondName());
+			userDto.setThirdName(user.get().getThirdName());
+			return userDto;
 		} else {
 			throw new Exception("The user does not exists.");
 		}

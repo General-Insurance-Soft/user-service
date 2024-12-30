@@ -2,6 +2,7 @@ package app.g_agent.user_service.dto;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import app.g_agent.user_service.model.Organization;
@@ -16,6 +17,8 @@ public class UserDto implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	private Long id;
 
 	@NotBlank(message = "First name is required")
 	@JsonProperty("first_name")
@@ -38,13 +41,23 @@ public class UserDto implements Serializable {
 
 	@NotBlank(message = "Password is required")
 	@Size(min = 8, message = "Password must be at least 8 characters long")
+	@JsonIgnore
 	private String password;
 
 	@NotNull(message = "Role is required")
 	private Long role;
 
 	@NotNull(message = "Organization field required")
+	@JsonIgnore
 	private Long organization;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getFirstName() {
 		return firstName;

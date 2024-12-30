@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.g_agent.user_service.dto.RoleDto;
 import app.g_agent.user_service.dto.UserDto;
 import app.g_agent.user_service.service.UserService;
 import app.g_agent.user_service.system.commons.Message;
@@ -57,7 +58,7 @@ public class UserController {
 		message.setMessageString("User created successfully");
 		return ResponseEntity.ok(message);
 	}
-	
+
 	@DeleteMapping("/delete")
 	public ResponseEntity<?> deleteUser(HttpServletRequest request, @RequestParam Long user) {
 
@@ -73,5 +74,21 @@ public class UserController {
 		message.setNameString("Success");
 		message.setMessageString("User deleted successfully");
 		return ResponseEntity.ok(message);
+	}
+
+	@GetMapping("/get")
+	public ResponseEntity<?> getUser(HttpServletRequest request, @RequestParam Long user) {
+
+		Message message = new Message();
+		try {
+			UserDto userDto = userService.getUser(request, user);
+			return ResponseEntity.ok(userDto);
+		} catch (Exception ex) {
+			message.setNameString("Error");
+			message.setMessageString(ex.getMessage());
+			return ResponseEntity.status(403).body(message);
+
+		}
+
 	}
 }
