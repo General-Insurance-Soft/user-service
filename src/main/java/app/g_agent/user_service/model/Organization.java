@@ -142,16 +142,4 @@ public class Organization {
 		this.address = address;
 	}
 
-	@Override
-	public String toString() {
-		return "Organization [id=" + id + ", name=" + name + ", address=" + address + ", phone=" + phone + ", email="
-				+ email + ", website=" + website + ", logo=" + logo + ", users=" + users + ", createdAt=" + createdAt
-				+ ", updatedAt=" + updatedAt + ", updatedBy=" + updatedBy + ", getName()=" + getName() + ", getPhone()="
-				+ getPhone() + ", getEmail()=" + getEmail() + ", getWebsite()=" + getWebsite() + ", getLogo()="
-				+ getLogo() + ", getId()=" + getId() + ", getUsers()=" + getUsers() + ", getCreatedAt()="
-				+ getCreatedAt() + ", getUpdatedAt()=" + getUpdatedAt() + ", getUpdatedBy()=" + getUpdatedBy()
-				+ ", getAddress()=" + getAddress() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode()
-				+ ", toString()=" + super.toString() + "]";
-	}
-
 }
