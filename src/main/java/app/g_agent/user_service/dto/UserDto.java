@@ -2,10 +2,10 @@ package app.g_agent.user_service.dto;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.beans.factory.annotation.Value;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import app.g_agent.user_service.model.Organization;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -33,7 +33,7 @@ public class UserDto implements Serializable {
 	private String thirdName;
 
 	@NotBlank(message = "First name is required")
-	@Pattern(regexp = "^(?:\\+254|0)(7|1)[0-9]{8}$", message = "Invalid  phone number. Must start with +254 or 0, followed by 7 or 1, and 8 digits.")
+	@Pattern(regexp = "^(?:\\\\+254|0)(7|1)[0-9]{8}$", message = "Invalid  phone number. Must start with +254 or 0, followed by 7 or 1, and 8 digits.")
 	private String phone;
 
 	@Email(message = "Invalid Email format")

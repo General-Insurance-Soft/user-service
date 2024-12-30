@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,21 +34,12 @@ public class UserController {
 	@Autowired
 	UserService userService;
 
-	@GetMapping("/index")
-	public Map<String, String> index() {
-
-		Map<String, String> testMap = new HashMap<String, String>();
-		testMap.put("results", "logged in successfully");
-		return testMap;
-
-	}
-
 	@PostMapping("/create")
-	public ResponseEntity<?> createUser(@Valid @RequestBody UserDto userDto) {
+	public ResponseEntity<?> createUser(HttpServletRequest request, @Valid @RequestBody UserDto userDto) {
 		logger.info("User DTO from requerst " + userDto.toString());
 		Message message = new Message();
 		try {
-			userService.createUser(userDto);
+			userService.createUser(request, userDto);
 		} catch (Exception ex) {
 			message.setNameString("Error");
 			message.setMessageString(ex.getMessage());
@@ -90,5 +82,23 @@ public class UserController {
 
 		}
 
+	}
+
+	@PutMapping("/update")
+	public ResponseEntity<?> updateUser(HttpServletRequest request, @RequestBody UserDto userDto,
+			@RequestParam Long user) {
+		logger.info("User DTO from requerst " + userDto.toString());
+		Message message = new Message();
+		try {
+			userService.updateUser(request, userDto, user);
+		} catch (Exception ex) {
+			message.setNameString("Error");
+			message.setMessageString(ex.getMessage());
+			return ResponseEntity.status(403).body(message);
+
+		}
+		message.setNameString("Success");
+		message.setMessageString("User updated successfully");
+		return ResponseEntity.ok(message);
 	}
 }
