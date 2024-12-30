@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,5 +61,21 @@ public class RoleController {
 		message.setNameString("Success");
 		message.setMessageString("Role deleted successfully");
 		return ResponseEntity.ok(message);
+	}
+
+	@GetMapping("/get")
+	public ResponseEntity<?> getRole(HttpServletRequest request, @RequestParam Long role) {
+
+		Message message = new Message();
+		try {
+			RoleDto roleDto = roleService.getRole(request, role);
+			return ResponseEntity.ok(roleDto);
+		} catch (Exception ex) {
+			message.setNameString("Error");
+			message.setMessageString(ex.getMessage());
+			return ResponseEntity.status(403).body(message);
+
+		}
+
 	}
 }
