@@ -72,4 +72,22 @@ public class RoleService {
 		}
 
 	}
+
+	public RoleDto getRole(HttpServletRequest request, Long id) throws Exception {
+		User user = contextService.getCurrentUser(request);
+
+		Optional<Role> role = roleRepository.findByIdAndOrganizationId(id, user.getOrganization().getId());
+
+		logger.info("To get role ==========> id: " + id);
+		RoleDto roleDto = new RoleDto();
+
+		if (role.isPresent()) {
+			roleDto.setName(role.get().getName());
+			roleDto.setRoleId(role.get().getId());
+			return roleDto;
+		} else {
+			throw new Exception("The role does not exists.");
+		}
+
+	}
 }
