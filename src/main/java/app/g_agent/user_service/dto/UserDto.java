@@ -48,7 +48,6 @@ public class UserDto implements Serializable {
 	private Long role;
 
 	@NotNull(message = "Organization field required")
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private Long organization;
 
 	public Long getId() {
