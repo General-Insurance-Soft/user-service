@@ -18,7 +18,6 @@ public class RoleDto {
 
 	@NotNull(message = "Authorities list cannot be null")
 	@NotEmpty(message = "Authorities list cannot be empty")
-	@Valid // Ensure validation is applied to each element in the list
 	@JsonIgnore
 	private List<Long> authorities;
 
