@@ -1,5 +1,9 @@
 package app.g_agent.user_service.service;
 
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,17 +21,21 @@ import jakarta.servlet.http.HttpServletRequest;
 @Service
 public class UserService {// implements UserDetailsService {
 
+	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
 	private final UserRepository userRepository;
 	private BCryptPasswordEncoder passwordEncoder;
 	OrganizationService organizationService;
 	RoleRepository roleRepository;
+	private ContextService contextService;
 
 	public UserService(UserRepository userRepository, OrganizationService organizationService,
-			RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
+			RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder, ContextService contextService) {
 		this.userRepository = userRepository;
 		this.organizationService = organizationService;
 		this.roleRepository = roleRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.contextService = contextService;
 
 	}
 
@@ -53,6 +61,20 @@ public class UserService {// implements UserDetailsService {
 				throw new Exception("A user with this email already exists.");
 			}
 			throw ex; // Rethrow if not related to constraint violation
+		}
+
+	}
+
+	public void deleteUser(HttpServletRequest request, Long id) throws Exception {
+		User currentUser = contextService.getCurrentUser(request);
+
+		Optional<User> user = userRepository.findByIdAndOrganizationId(id, currentUser.getOrganization().getId());
+
+		logger.info("To delete user ==========> id: " + id);
+		if (user.isPresent()) {
+			userRepository.delete(user.get());
+		} else {
+			throw new Exception("The user does not exists.");
 		}
 
 	}
