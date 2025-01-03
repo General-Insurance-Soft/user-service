@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import app.g_agent.user_service.dto.Token;
 import app.g_agent.user_service.dto.UserTokenResponse;
 import app.g_agent.user_service.model.TokenBlackList;
+import app.g_agent.user_service.model.User;
 import app.g_agent.user_service.repository.TokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -78,10 +79,12 @@ public class JwtService {
 		return (username.equals(userDetails.getUsername())) && !isTokenExpired(token) && isCorrectType(token, type);
 	}
 
-	public UserTokenResponse getTokenUserResponse(UserDetails user) {
+	public UserTokenResponse getTokenUserResponse(User user) {
 		logger.info("Attempting to generate JWT =====>");
 		Map<String, Object> extraClaims = new HashMap<String, Object>();
 		extraClaims.put("type", "access");
+		extraClaims.put("user-id", user.getId());
+		extraClaims.put("authorities", user.getAuthorities());
 		String jwtToken = this.generateToken(extraClaims, user, jwtExpiration);
 		extraClaims = new HashMap<String, Object>();
 		extraClaims.put("type", "refresh");
