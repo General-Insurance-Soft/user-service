@@ -39,7 +39,7 @@ public class UserService {// implements UserDetailsService {
 	}
 
 	public void createUser(HttpServletRequest request, UserDto userDto) throws Exception {
-		Organization organization = organizationService.getOrganizationById(userDto.getOrganization());
+		Organization organization = contextService.getCurrentUser(request).getOrganization();
 		Role role = roleRepository.getReferenceById(userDto.getRole());
 
 		User user = new User();
@@ -76,6 +76,10 @@ public class UserService {// implements UserDetailsService {
 			throw new Exception("The user does not exists.");
 		}
 
+	}
+
+	public User getUserById(Long id) {
+		return userRepository.getReferenceById(id);
 	}
 
 	public UserDto getUser(HttpServletRequest request, Long id) throws Exception {
