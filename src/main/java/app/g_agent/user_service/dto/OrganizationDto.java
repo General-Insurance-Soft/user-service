@@ -2,6 +2,8 @@ package app.g_agent.user_service.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import app.g_agent.user_service.model.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +16,7 @@ public class OrganizationDto {
 	@NotBlank(message = "Organization name required")
 	private String name;
 
-	private Long address;
+	private String address;
 
 	private String phone;
 
@@ -26,10 +28,13 @@ public class OrganizationDto {
 
 	private String logo;
 
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private LocalDateTime createdAt;
 
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private LocalDateTime updatedAt;
 
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private User updatedBy;
 
 	public String getName() {
@@ -104,11 +109,11 @@ public class OrganizationDto {
 		this.updatedBy = updatedBy;
 	}
 
-	public Long getAddress() {
+	public String getAddress() {
 		return address;
 	}
 
-	public void setAddress(Long address) {
+	public void setAddress(String address) {
 		this.address = address;
 	}
 
