@@ -32,7 +32,7 @@ public class UserDto implements Serializable {
 	@JsonProperty("third_name")
 	private String thirdName;
 
-	@NotBlank(message = "First name is required")
+	@NotBlank(message = "Phone number is required")
 	@Pattern(regexp = "^(?:\\\\+254|0)(7|1)[0-9]{8}$", message = "Invalid  phone number. Must start with +254 or 0, followed by 7 or 1, and 8 digits.")
 	private String phone;
 
@@ -47,7 +47,7 @@ public class UserDto implements Serializable {
 	@NotNull(message = "Role is required")
 	private Long role;
 
-	@NotNull(message = "Organization field required")
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	private Long organization;
 
 	public Long getId() {
