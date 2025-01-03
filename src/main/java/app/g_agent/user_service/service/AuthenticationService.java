@@ -2,12 +2,16 @@ package app.g_agent.user_service.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import app.g_agent.user_service.dto.LoginRequest;
+import app.g_agent.user_service.dto.SingUpRequest;
+import app.g_agent.user_service.model.Organization;
+import app.g_agent.user_service.model.Role;
 import app.g_agent.user_service.model.User;
 import app.g_agent.user_service.repository.UserRepository;
 
@@ -20,13 +24,23 @@ public class AuthenticationService {
 
 	private final AuthenticationManager authenticationManager;
 
+	private AuthorityService autorityService;
+
+	private RoleService roleService;
+
+	private UserService userService;
+
 	private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
 	public AuthenticationService(UserRepository userRepository, AuthenticationManager authenticationManager,
-			PasswordEncoder passwordEncoder) {
+			PasswordEncoder passwordEncoder, AuthorityService autorityService, RoleService roleService,
+			UserService userService) {
 		this.authenticationManager = authenticationManager;
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.autorityService = autorityService;
+		this.roleService = roleService;
+		this.userService = userService;
 	}
 
 //	public User signup(RegisterUserDto input) {
@@ -44,5 +58,35 @@ public class AuthenticationService {
 
 		logger.info("provided user/email ==========> " + input.getEmail());
 		return userRepository.findByEmail(input.getEmail()).orElseThrow(() -> new RuntimeException("Bad Credentials"));
+	}
+
+	public Boolean signUpUser(SingUpRequest input) throws Exception {
+
+		Organization organization = new Organization();
+		Role role = roleService.getRoleById(0L);
+
+		organization.setName("Default");
+
+		User user = new User();
+
+		user.setEmail(input.getEmail());
+
+		user.setRole(role);
+		user.setOrganization(organization);
+		user.setPassword(passwordEncoder.encode(input.getPassword()));
+		user.setSecondName(input.getSecondName());
+		user.setThirdName(input.getThirdName());
+		user.setFirstName(input.getFirstName());
+		user.setUpdatedBy(userService.getUserById(0L));
+		try {
+			userRepository.save(user);
+			return true;
+		} catch (DataIntegrityViolationException ex) {
+			if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+				throw new Exception("A user with this email already exists.");
+			}
+			throw ex; // Rethrow if not related to constraint violation
+		}
+
 	}
 }

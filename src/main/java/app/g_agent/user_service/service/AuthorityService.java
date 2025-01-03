@@ -32,4 +32,10 @@ public class AuthorityService {
 		Set<Authority> authorities = new HashSet<Authority>(authorityRepository.findAllById(ids));
 		return authorities;
 	}
+
+	public Set<Authority> getAllAuthority() {
+		logger.info("Fetching all Authorities");
+		Set<Authority> authorities = new HashSet<Authority>(authorityRepository.findAll());
+		return authorities;
+	}
 }
