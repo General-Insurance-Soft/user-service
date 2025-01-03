@@ -1,14 +1,14 @@
 package app.g_agent.user_service.model;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
+import java.util.Set;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -17,11 +17,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "organization", uniqueConstraints = { @UniqueConstraint(columnNames = { "updated_by_id", "name" }) })
 @EntityListeners(AuditingEntityListener.class)
 public class Organization {
 
@@ -30,7 +27,7 @@ public class Organization {
 	private Long id;
 	private String name;
 
-	private Long address;
+	private String address;
 
 	private String phone;
 
@@ -41,7 +38,7 @@ public class Organization {
 	private String logo;
 
 	@OneToMany(mappedBy = "organization")
-	private List<User> users;
+	private Set<User> users = new HashSet<>();
 
 	@CreatedDate
 	@Column(updatable = false, name = "created_at", nullable = false)
@@ -102,11 +99,11 @@ public class Organization {
 		this.id = id;
 	}
 
-	public List<User> getUsers() {
+	public Set<User> getUsers() {
 		return users;
 	}
 
-	public void setUsers(List<User> users) {
+	public void setUsers(Set<User> users) {
 		this.users = users;
 	}
 
@@ -134,11 +131,11 @@ public class Organization {
 		this.updatedBy = updatedBy;
 	}
 
-	public Long getAddress() {
+	public String getAddress() {
 		return address;
 	}
 
-	public void setAddress(Long address) {
+	public void setAddress(String address) {
 		this.address = address;
 	}
 
