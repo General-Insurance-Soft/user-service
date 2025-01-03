@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import app.g_agent.user_service.dto.LoginRequest;
 import app.g_agent.user_service.dto.SingUpRequest;
@@ -30,17 +31,20 @@ public class AuthenticationService {
 
 	private UserService userService;
 
+	private OrganizationService organizationService;
+
 	private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
 	public AuthenticationService(UserRepository userRepository, AuthenticationManager authenticationManager,
 			PasswordEncoder passwordEncoder, AuthorityService autorityService, RoleService roleService,
-			UserService userService) {
+			OrganizationService organizationService, UserService userService) {
 		this.authenticationManager = authenticationManager;
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.autorityService = autorityService;
 		this.roleService = roleService;
 		this.userService = userService;
+		this.organizationService = organizationService;
 	}
 
 //	public User signup(RegisterUserDto input) {
@@ -60,13 +64,15 @@ public class AuthenticationService {
 		return userRepository.findByEmail(input.getEmail()).orElseThrow(() -> new RuntimeException("Bad Credentials"));
 	}
 
+	@Transactional
 	public Boolean signUpUser(SingUpRequest input) throws Exception {
 
 		Organization organization = new Organization();
 		Role role = roleService.getRoleById(0L);
 
 		organization.setName("Default");
-
+		organization.setUpdatedBy(userService.getUserById(0L));
+		organizationService.createOrganization(organization);
 		User user = new User();
 
 		user.setEmail(input.getEmail());
