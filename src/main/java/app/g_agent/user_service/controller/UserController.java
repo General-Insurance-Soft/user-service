@@ -84,6 +84,21 @@ public class UserController {
 
 	}
 
+	@GetMapping("/get-list")
+	public ResponseEntity<?> getUser(HttpServletRequest request) {
+
+		Message message = new Message();
+		try {
+			return ResponseEntity.ok(userService.getUser(request));
+		} catch (Exception ex) {
+			message.setNameString("Error");
+			message.setMessageString(ex.getMessage());
+			return ResponseEntity.status(403).body(message);
+
+		}
+
+	}
+
 	@PutMapping("/update")
 	public ResponseEntity<?> updateUser(HttpServletRequest request, @RequestBody UserDto userDto,
 			@RequestParam Long user) {

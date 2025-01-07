@@ -1,5 +1,7 @@
 package app.g_agent.user_service.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -53,6 +55,7 @@ public class UserService {// implements UserDetailsService {
 		user.setThirdName(userDto.getThirdName());
 		user.setFirstName(userDto.getFirstName());
 		user.setUpdatedBy(contextService.getCurrentUser(request));
+
 		try {
 			userRepository.save(user);
 		} catch (DataIntegrityViolationException ex) {
@@ -101,6 +104,37 @@ public class UserService {// implements UserDetailsService {
 			return userDto;
 		} else {
 			throw new Exception("The user does not exists.");
+		}
+
+	}
+
+	public List<UserDto> getUser(HttpServletRequest request) throws Exception {
+		User currentUser = contextService.getCurrentUser(request);
+
+		Optional<List<User>> users = userRepository.findByOrganizationId(currentUser.getOrganization().getId());
+
+		if (users.isPresent()) {
+
+			List<UserDto> UserDtos = new ArrayList<>();
+
+			users.get().forEach(user -> {
+
+				UserDto userDto = new UserDto();
+				userDto.setId(user.getId());
+				userDto.setEmail(user.getEmail());
+				userDto.setFirstName(user.getFirstName());
+				userDto.setPhone(user.getPhone());
+				userDto.setRole(user.getRole().getId());
+				userDto.setSecondName(user.getSecondName());
+				userDto.setThirdName(user.getThirdName());
+				UserDtos.add(userDto);
+
+			});
+
+			return UserDtos;
+
+		} else {
+			throw new Exception("No users exist.");
 		}
 
 	}
