@@ -22,6 +22,7 @@ import app.g_agent.user_service.model.User;
 import app.g_agent.user_service.service.AuthenticationService;
 import app.g_agent.user_service.service.JwtService;
 import app.g_agent.user_service.system.commons.Message;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -105,12 +106,20 @@ public class AuthController {
 	}
 
 	@PostMapping("/validate-token")
-	public ResponseEntity<?> validateToken(@RequestBody Map<String, String> request) {
-		logger.info("Refresh token request =====> " + request);
-		String token = request.get("token");
+	public ResponseEntity<?> validateToken(HttpServletRequest request) {
+		logger.info("Validate token request =====> " + request);
+
 		ResponseEntity<?> responseEntity = null;
 
 		try {
+
+			String authHeader = request.getHeader("Authorization");
+			String token = authHeader.substring(7);
+			if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+
+				throw new Exception();
+			}
+
 			final String userEmail = jwtService.extractUsername(token);
 
 			if (userEmail != null) {
@@ -134,7 +143,7 @@ public class AuthController {
 			Message message = new Message();
 			message.setNameString("Unauthorized");
 			message.setMessageString(e.getMessage());
-			return ResponseEntity.status(400).body(message);
+			return ResponseEntity.status(401).body(message);
 		}
 
 	}
@@ -147,7 +156,7 @@ public class AuthController {
 			LoginRequest loginRequest = new LoginRequest();
 			loginRequest.setEmail(signUpRequest.getEmail());
 			loginRequest.setPassword(signUpRequest.getPassword());
-			
+
 			boolean bool = authenticationService.signUpUser(signUpRequest);
 			user = authenticationService.authenticate(loginRequest);
 		} catch (Exception e) {
