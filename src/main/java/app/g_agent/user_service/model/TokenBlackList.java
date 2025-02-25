@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 public class TokenBlackList {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private UUID id;
 	@Column(name = "token")
 	private String token;

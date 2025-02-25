@@ -33,7 +33,7 @@ public class OrganizationService {
 		organization.setEmail(organizationDto.getEmail());
 		organization.setLogo(organizationDto.getLogo());
 		organization.setName(organizationDto.getName());
-		organization.setUpdatedBy(contextService.getCurrentUser(request));
+		organization.setUpdatedBy(contextService.getCurrentUser(request).getId());
 		organization.setPhone(organizationDto.getPhone());
 		organization.setWebsite(organizationDto.getWebsite());
 
@@ -50,12 +50,12 @@ public class OrganizationService {
 
 	}
 
-	public void createOrganization(Organization organization) throws Exception {
+	public Organization createOrganization(Organization organization) throws Exception {
 
 		logger.info("organization to persist ==========> " + organization.toString());
 
 		try {
-			oganizationRepository.save(organization);
+			return oganizationRepository.save(organization);
 		} catch (DataIntegrityViolationException ex) {
 			if (ex.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
 				throw new Exception("This organization or user already exists. Can't create new organization");

@@ -47,13 +47,14 @@ public class AuthenticationService {
 		this.organizationService = organizationService;
 	}
 
-//	public User signup(RegisterUserDto input) {
-//		User user = new User().setFullName(input.getFullName()).setEmail(input.getEmail())
-//				.setPassword(passwordEncoder.encode(input.getPassword()));
-//
-//		return userRepository.save(user);
-//	}
-//new Exception()
+	// public User signup(RegisterUserDto input) {
+	// User user = new
+	// User().setFullName(input.getFullName()).setEmail(input.getEmail())
+	// .setPassword(passwordEncoder.encode(input.getPassword()));
+	//
+	// return userRepository.save(user);
+	// }
+	// new Exception()
 	public User authenticate(LoginRequest input) {
 		logger.info("Attempt to authenticate==========> " + input.getEmail());
 
@@ -68,23 +69,24 @@ public class AuthenticationService {
 	public Boolean signUpUser(SingUpRequest input) throws Exception {
 
 		Organization organization = new Organization();
-		Role role = roleService.getRoleById(0L);
+		Role role = roleService.getRoleById(1L);
 
 		organization.setName("Default");
-		organization.setUpdatedBy(userService.getUserById(0L));
-		organizationService.createOrganization(organization);
+		organization.setUpdatedBy(1L);
+		Organization newOrg = organizationService.createOrganization(organization);
 		User user = new User();
-
+		logger.debug("Sign-up user: Organization created=============>");
 		user.setEmail(input.getEmail());
 
 		user.setRole(role);
-		user.setOrganization(organization);
+		user.setOrganization(newOrg);
 		user.setPassword(passwordEncoder.encode(input.getPassword()));
 		user.setSecondName(input.getSecondName());
 		user.setThirdName(input.getThirdName());
 		user.setFirstName(input.getFirstName());
-		user.setUpdatedBy(userService.getUserById(0L));
+		user.setUpdatedBy(userService.getUserById(1L));
 		try {
+			logger.debug("Sign-up user: creating user=============>");
 			userRepository.save(user);
 			return true;
 		} catch (DataIntegrityViolationException ex) {
