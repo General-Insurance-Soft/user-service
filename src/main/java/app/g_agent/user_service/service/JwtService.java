@@ -104,7 +104,6 @@ public class JwtService {
 
 	public void persistUsedToken(String token) {
 		TokenBlackList tokenBlackList = new TokenBlackList();
-		tokenBlackList.setId(UUID.randomUUID());
 		tokenBlackList.setToken(token);
 		tokenBlackList.setExpriDate(this.extractExpiration(token));
 		tokenRepository.save(tokenBlackList);

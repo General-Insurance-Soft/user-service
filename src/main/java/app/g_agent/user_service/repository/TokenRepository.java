@@ -10,7 +10,7 @@ import app.g_agent.user_service.model.TokenBlackList;
 import app.g_agent.user_service.model.User;
 
 @Service
-public interface TokenRepository extends JpaRepository<TokenBlackList, UUID> {
+public interface TokenRepository extends JpaRepository<TokenBlackList, Long> {
 
 	Optional<TokenBlackList> findByToken(String token);
 	
