@@ -163,7 +163,7 @@ public class AuthController {
 			Message message = new Message();
 			message.setNameString("Error");
 			message.setMessageString(e.getMessage());
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
+			return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(message);
 		}
 
 		UserTokenResponse userTokenResponse = jwtService.getTokenUserResponse(user);
