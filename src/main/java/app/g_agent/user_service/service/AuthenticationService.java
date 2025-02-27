@@ -68,6 +68,11 @@ public class AuthenticationService {
 	@Transactional
 	public Boolean signUpUser(SingUpRequest input) throws Exception {
 
+		userRepository.findByEmail(input.getEmail())
+				.ifPresent(user -> {
+					throw new RuntimeException("Email already taken");
+				});
+
 		Organization organization = new Organization();
 		Role role = roleService.getRoleById(1L);
 
