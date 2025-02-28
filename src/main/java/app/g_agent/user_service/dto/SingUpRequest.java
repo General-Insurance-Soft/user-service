@@ -2,20 +2,38 @@ package app.g_agent.user_service.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class SingUpRequest {
-	private String email;
-	private String password;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
+public class SingUpRequest {
+
+	@NotBlank(message = "First name is required")
+	@NotNull(message = "First name is required")
 	@JsonProperty("first_name")
 	private String firstName;
 
 	@JsonProperty("second_name")
 	private String secondName;
 
+	@NotBlank(message = "Third name cannot be blank")
+	@NotNull(message = "Third name is required")
 	@JsonProperty("third_name")
 	private String thirdName;
 
+	@NotBlank(message = "Phone number is required")
+	@Pattern(regexp = "^(?:\\\\+254|0)(7|1)[0-9]{8}$", message = "Invalid  phone number. Must start with +254 or 0, followed by 7 or 1, and 8 digits.")
 	private String phone;
+
+	@Email(message = "Invalid Email format")
+	private String email;
+
+	@NotBlank(message = "Password is required")
+	@Size(min = 8, message = "Password must be at least 8 characters long")
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private String password;
 
 	public String getEmail() {
 		return email;
