@@ -126,7 +126,6 @@ public class AuthController {
 				User user = (User) userDetailsService.loadUserByUsername(userEmail);
 
 				if (jwtService.isTokenValid(token, user, accessTokenType)) {
-					UserTokenResponse userTokenResponse = jwtService.getTokenUserResponse(user);
 					Message message = new Message();
 					message.setNameString("success");
 					message.setMessageString("valid token");
