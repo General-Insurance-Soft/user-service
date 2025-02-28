@@ -141,7 +141,8 @@ public class AuthController {
 		} catch (Exception e) {
 			Message message = new Message();
 			message.setNameString("Unauthorized");
-			message.setMessageString(e.getMessage());
+			message.setMessageString(e.getLocalizedMessage());
+			logger.error(e.getMessage());
 			return ResponseEntity.status(401).body(message);
 		}
 
