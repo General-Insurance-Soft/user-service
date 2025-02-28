@@ -87,6 +87,7 @@ public class AuthenticationService {
 		user.setOrganization(newOrg);
 		user.setPassword(passwordEncoder.encode(input.getPassword()));
 		user.setSecondName(input.getSecondName());
+		user.setPhone(input.getPhone());
 		user.setThirdName(input.getThirdName());
 		user.setFirstName(input.getFirstName());
 		user.setUpdatedBy(userService.getUserById(1L));
