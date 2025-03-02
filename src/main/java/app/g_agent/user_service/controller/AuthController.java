@@ -99,7 +99,8 @@ public class AuthController {
 		} catch (Exception e) {
 			Message message = new Message();
 			message.setNameString("Unauthorized");
-			message.setMessageString(e.getMessage());
+			message.setMessageString(e.getLocalizedMessage());
+			logger.error(e.getMessage());
 			return ResponseEntity.status(400).body(message);
 		}
 
@@ -117,7 +118,7 @@ public class AuthController {
 			String token = authHeader.substring(7);
 			if (authHeader == null || !authHeader.startsWith("Bearer ")) {
 
-				throw new Exception();
+				throw new Exception("Malformed token");
 			}
 
 			final String userEmail = jwtService.extractUsername(token);
