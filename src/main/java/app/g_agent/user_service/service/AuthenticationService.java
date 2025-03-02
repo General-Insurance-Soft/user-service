@@ -62,7 +62,7 @@ public class AuthenticationService {
 				.authenticate(new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword()));
 
 		logger.info("provided user/email ==========> " + input.getEmail());
-		return userRepository.findByEmail(input.getEmail()).orElseThrow(() -> new RuntimeException("Bad Credentials"));
+		return userRepository.findByEmail(input.getEmail()).orElseThrow(() -> new RuntimeException("Wrong email or Password"));
 	}
 
 	@Transactional
