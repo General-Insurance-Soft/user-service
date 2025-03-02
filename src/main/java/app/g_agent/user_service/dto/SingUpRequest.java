@@ -28,6 +28,8 @@ public class SingUpRequest {
 	private String phone;
 
 	@Email(message = "Invalid Email format")
+	@NotBlank(message = "Email cannot be blank")
+	@NotNull(message = "Email is required")
 	private String email;
 
 	@NotBlank(message = "Password is required")
