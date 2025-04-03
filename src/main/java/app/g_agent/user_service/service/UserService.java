@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 
 import app.g_agent.user_service.dto.UserDto;
 import app.g_agent.user_service.model.Organization;
@@ -115,28 +116,48 @@ public class UserService {// implements UserDetailsService {
 
 		if (users.isPresent()) {
 
-			List<UserDto> UserDtos = new ArrayList<>();
-
-			users.get().forEach(user -> {
-
-				UserDto userDto = new UserDto();
-				userDto.setId(user.getId());
-				userDto.setEmail(user.getEmail());
-				userDto.setFirstName(user.getFirstName());
-				userDto.setPhone(user.getPhone());
-				userDto.setRole(user.getRole().getId());
-				userDto.setSecondName(user.getSecondName());
-				userDto.setThirdName(user.getThirdName());
-				UserDtos.add(userDto);
-
-			});
-
-			return UserDtos;
+			return this.getUserDtos(users);
 
 		} else {
 			throw new Exception("No users exist.");
 		}
 
+	}
+
+	public List<UserDto> getUsersByIds(HttpServletRequest request, MultiValueMap<String, String> headers,
+			List<Long> usersIds) throws Exception {
+		User currentUser = contextService.getCurrentUser(request);
+
+		Optional<List<User>> users = userRepository.findByIds(usersIds);
+
+		if (users.isPresent()) {
+
+			return this.getUserDtos(users);
+
+		} else {
+			throw new Exception("No users exist.");
+		}
+
+	}
+
+	private List<UserDto> getUserDtos(Optional<List<User>> users) {
+		List<UserDto> UserDtos = new ArrayList<>();
+
+		users.get().forEach(user -> {
+
+			UserDto userDto = new UserDto();
+			userDto.setId(user.getId());
+			userDto.setEmail(user.getEmail());
+			userDto.setFirstName(user.getFirstName());
+			userDto.setPhone(user.getPhone());
+			userDto.setRole(user.getRole().getId());
+			userDto.setSecondName(user.getSecondName());
+			userDto.setThirdName(user.getThirdName());
+			UserDtos.add(userDto);
+
+		});
+
+		return UserDtos;
 	}
 
 	public void updateUser(HttpServletRequest request, UserDto userDto, Long id) throws Exception {
