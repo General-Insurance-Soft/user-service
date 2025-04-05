@@ -84,6 +84,7 @@ public class JwtService {
 		Map<String, Object> extraClaims = new HashMap<String, Object>();
 		extraClaims.put("type", "access");
 		extraClaims.put("user-id", user.getId());
+		extraClaims.put("email", user.getEmail());
 		extraClaims.put("organization-id", user.getOrganization().getId());
 		extraClaims.put("authorities", user.getAuthorities());
 		String jwtToken = this.generateToken(extraClaims, user, jwtExpiration);
