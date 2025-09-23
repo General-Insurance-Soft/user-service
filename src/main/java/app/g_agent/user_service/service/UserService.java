@@ -109,6 +109,11 @@ public class UserService {// implements UserDetailsService {
 
 	}
 
+	public Long getUserOrg(HttpServletRequest request) throws Exception {
+		User currentUser = contextService.getCurrentUser(request);
+		return currentUser.getOrganization().getId();
+	}
+
 	public List<UserDto> getUser(HttpServletRequest request) throws Exception {
 		User currentUser = contextService.getCurrentUser(request);
 

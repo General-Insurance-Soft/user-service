@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.g_agent.user_service.dto.OrganizationDto;
 import app.g_agent.user_service.dto.RoleDto;
+import app.g_agent.user_service.model.User;
 import app.g_agent.user_service.service.OrganizationService;
 import app.g_agent.user_service.service.RoleService;
+import app.g_agent.user_service.service.UserService;
 import app.g_agent.user_service.system.commons.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1/organization")
@@ -27,6 +31,9 @@ public class OrganizationController {
 
 	@Autowired
 	OrganizationService organizationService;
+
+	@Autowired
+	UserService userService;
 
 	@PostMapping("/create")
 	public ResponseEntity<?> createOrganization(HttpServletRequest request,
@@ -44,5 +51,16 @@ public class OrganizationController {
 		message.setNameString("Success");
 		message.setMessageString("Organization created successfully");
 		return ResponseEntity.ok(message);
-	} 
+	}
+
+	@GetMapping("/get-org-id")
+	public Long getOrganizationId(HttpServletRequest request) {
+		try {
+			return userService.getUserOrg(request);
+		} catch (Exception ex) {
+			logger.error("Error fetching organization ID: " + ex.getMessage());
+			return null;
+		}
+	}
+
 }
